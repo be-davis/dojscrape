@@ -1,3 +1,4 @@
+#%%
 import requests
 import time
 import os
@@ -21,7 +22,7 @@ class DojNewsScraper():
     saved. Some releases are speech transcripts, and these are ignored."""
 
     def __init__(self, sleep_time=1.5):
-        self.url = 'https://www.justice.gov'
+        self.url = 'https://www.justice.gov/news/press-releases?search_api_fulltext=child+sexual+abuse&start_date=&end_date=&sort_by=field_date'
         self.dir = 'data/'
         self.sleep_time = sleep_time
 
@@ -29,7 +30,7 @@ class DojNewsScraper():
             os.mkdir(self.dir)
 
     def _format_page_url(self, page_num):       
-        return '{}/news?page={}'.format(self.url, page_num)
+        return '{}&page={}'.format(self.url, page_num)
 
     def _get_page_content(self, url):
         return requests.get(url).content
@@ -51,7 +52,7 @@ class DojNewsScraper():
 
         Scraper stops if two consecutive pages contain duplicate links. This
         helps if you are incrementally scraping for latest results.
-
+last
         Args:
             start_page: Sets the starting page for the scrape if need to resume
                 from a later point        
@@ -68,10 +69,14 @@ class DojNewsScraper():
 
         # Scrape the first news page and get the count from the LAST PAGE link
         content = self._get_page_content(self._format_page_url(start_page))
+        #print('lo')
+        #print(content)
         page_data = BeautifulSoup(content, 'lxml')
-        
-        total_page_count = int(page_data.find('a', MAIN_PAGE_LAST)['href']\
-            .split('=')[1])
+        #print('hiii')
+        print(page_data)
+        #print(page_data.find('a', MAIN_PAGE_LAST))
+        total_page_count = int(page_data.find('a',MAIN_PAGE_LAST)['href']\
+                               .split('page=')[1])
         print('Found {} pages'.format(total_page_count))
 
         current_page = start_page
@@ -81,7 +86,7 @@ class DojNewsScraper():
         # Note: Some pages were missing like 311 and 475 at the time I wrote this
         # Loop over each page which contains 25 links per page
         while continue_loop:
-            releases = page_data.find_all('div', MAIN_PAGE_RELEASE)
+            releases = page_data.find_all('article', MAIN_PAGE_RELEASE)
             add_count = 0
             skip_count = 0
 
@@ -120,6 +125,7 @@ class DojNewsScraper():
             file.writelines('\n'.join([u for u in urls]))
 
     def get_page_detail(self):
+        print('WHAT IT DOOOOO')
         """Parses press releases into JSON files
 
         Reads links.txt and attempts to download a copy of each press release
@@ -140,27 +146,44 @@ class DojNewsScraper():
         url_count = len(urls)
 
         for i, url in enumerate(urls):
+
             if '/speech/' in url:
                 print('Skipping speech {}'.format(url))
                 continue
 
             filepath = self._get_page_filename(url)
 
-            if os.path.exists(filepath):
-                print('{} already exists'.format(filepath))
-                continue
+            # if os.path.exists(filepath):
+            #     print('{} already exists'.format(filepath))
+            #     continue
 
             print('Scraping {} of {}'.format(i, url_count))
 
             # Get main page elements
-            data = BeautifulSoup(self._get_page_content(self.url + url), 'lxml')
-            page_text = ' '.join([p.text for p in data.find('div', PAGE_TEXT).find_all('p')])
-            page_title = data.find('h1', PAGE_TITLE).text
-            page_date = data.find('span', PAGE_DATE)['content']
+            #print(i,url)
+            data = BeautifulSoup(self._get_page_content('https://www.justice.gov' + url), 'lxml')
+            #print(data)
+            #print('hey')
+            all_text = data.find('div', PAGE_TEXT)
+            if all_text != None:
+                page_text = ' '.join([p.text for p in all_text.find_all('p')])
+            else:
+                page_text = None
+            print('PAGE TEXT')
+            #print(page_text)
+            #print(' '.join([p.text for p in data.find('div', PAGE_TEXT)]))
+            if all_text == None:
+                page_tite=None
+                page_date=None
+            else:
+                page_title = data.find('span', PAGE_TITLE).text
+                print(page_title)
+                page_date = data.find('div', PAGE_DATE).text
+                #['conent'] was in the line above before my edits
 
-            # Check topics (optional)
-            topics = data.find('div', PAGE_TOPIC_LIST)
-            page_topics = []
+                # Check topics (optional)
+                topics = data.find('div', PAGE_TOPIC_LIST)
+                page_topics = []
             if topics:
                 page_topics = [topic.text for topic in topics.find_all('div', PAGE_TOPIC)]
 
@@ -196,16 +219,16 @@ class DojNewsScraper():
         with open('combined.json', 'w') as master_file:
             files = glob.glob('{}*.json'.format(self.dir))
             print('Loading {} files'.format(len(files)))
-
+            master_file.write('[')
             for file_path in files:
                 with open(file_path, 'r') as json_file:
-                    master_file.write(json_file.read() + '\n')
+                    master_file.write(json_file.read() + ','+'\n')
                     i += 1
                 
                 if i % 1000 == 0:
                     print('...loaded {}/{}'.format(i, len(files)))
                 
-
+            master_file.write(']')
         print('Combined {} files into combined.json'.format(i))
 
 
@@ -214,8 +237,9 @@ class DojNewsScraper():
         self.get_page_links(start_page=start_page)
         self.get_page_detail()
         self.combine_outputs()
-
+#%%
 if __name__ == '__main__':
     scraper = DojNewsScraper()
     scraper.scrape()
 
+#%%
