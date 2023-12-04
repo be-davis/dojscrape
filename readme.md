@@ -1,7 +1,8 @@
 # DOJ Website Scraper
 
 ## Overview
-This Python script parses the https://www.justice.gov/news site for links to all releases which are parsed with BeautifulSoup and stored as JSON entities, and combined into a single JSON file. For each Press Release, the following is captured:
+This Python script parses the https://www.justice.gov/news site for links to all releases which are parsed with BeautifulSoup and stored as JSON entities, and combined into a single JSON file. For each Press Release, the following is captured: 
+THIS IS ADOPTED AND CHANGED FROM https://github.com/jbencina/dojreleases
 
 1. Press Release Number (Can be missing)
 2. Title
