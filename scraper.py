@@ -221,10 +221,14 @@ last
             print('Loading {} files'.format(len(files)))
             master_file.write('[')
             for file_path in files:
-                with open(file_path, 'r') as json_file:
-                    master_file.write(json_file.read() + ','+'\n')
-                    i += 1
-                
+                if i != len(files) - 1
+                    with open(file_path, 'r') as json_file:
+                        master_file.write(json_file.read() + ','+'\n')
+                        i += 1
+                else:
+                    with open(file_path, 'r') as json_file:
+                        master_file.write(json_file.read() + '\n')
+                        i += 1
                 if i % 1000 == 0:
                     print('...loaded {}/{}'.format(i, len(files)))
                 
