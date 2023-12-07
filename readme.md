@@ -11,3 +11,6 @@ THIS IS ADOPTED AND CHANGED FROM https://github.com/jbencina/dojreleases
 ## Scraper Instructions
 1. Ensure `BeautifulSoup` and `requests` libraries are installed
 2. In your terminal, navigate to whatever directory you cloned the repo in and type in `python scraper.py`
+
+## Examples of analytics it can draw
+![Alt text](yearly_trends.png)
