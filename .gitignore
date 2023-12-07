@@ -3,3 +3,5 @@
 !*.ipynb
 !*.md
 !.gitignore
+!yearly_trends.png
+!bar.png
