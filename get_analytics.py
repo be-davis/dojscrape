@@ -50,6 +50,7 @@ def get_all_data(df=df):
     
     words_df = pd.read_json('sample.json', orient='index')
     fig2, ax2 = plt.subplots()
+    
     ax2.barh(words_df.index,words_df['num_articles'])
     fig.savefig('bar')
     plt.show()
