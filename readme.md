@@ -9,7 +9,7 @@ THIS IS ADOPTED AND CHANGED FROM https://github.com/jbencina/dojreleases
 1. count of times a a word is mentioned in all of the press releases
 2. yearly trends of the number of press releases that have something to do with CSAM
 
-## Mast dataframe
+## Master dataframe
 1. Title
 2. Contents
 3. Publish Date
@@ -20,4 +20,4 @@ THIS IS ADOPTED AND CHANGED FROM https://github.com/jbencina/dojreleases
 
 ## Examples of analytics it can draw
 ![Alt text](yearly_trends.png)
-![Alt text](bar1.png)
+![Alt text](bar.png)
