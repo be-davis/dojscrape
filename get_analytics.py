@@ -2,11 +2,12 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 #from scraper.py import DojNewsScraper
+import json
 #%%
 
-df = pd.read_json('combined_csa.json')
-def get_all_data(df=df):
 
+def get_all_data():
+    df = pd.read_json('combined_csa.json')
     df['year'] = df['date'].str.slice(-4)
    #PLOT YEARLY REPORTS FOR CSA
     year_report_counts = df['year'].value_counts().sort_index()
@@ -16,7 +17,6 @@ def get_all_data(df=df):
     ax.set_ylabel('report count')
     ax.plot(year_report_counts)
     fig.savefig('yearly_trends')
-    plt.show()
     def get_stats(word):
         df_new = df.loc[df['contents'].str.contains(word, na=False)]
         return {
@@ -44,7 +44,7 @@ def get_all_data(df=df):
 
     }
     
-    import json
+
     with open("sample.json", "w") as outfile: 
         json.dump(df_word_dict, outfile)
     
@@ -53,8 +53,6 @@ def get_all_data(df=df):
     ax2.set_title('number of articles with given word included')
     ax2.barh(words_df.index,words_df['num_articles'])
     fig2.savefig('bar')
-    plt.show()
-get_all_data(df=df)
 # %%
 if __name__ == '__main__':
-    get_all_data(df=df)
+    get_all_data()
