@@ -20,4 +20,4 @@ THIS IS ADOPTED AND CHANGED FROM https://github.com/jbencina/dojreleases
 
 ## Examples of analytics it can draw
 ![Alt text](yearly_trends.png)
-![Alt text](bar.png)
+![Alt text](bar1.png)
