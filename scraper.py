@@ -52,7 +52,7 @@ class DojNewsScraper():
 
         Scraper stops if two consecutive pages contain duplicate links. This
         helps if you are incrementally scraping for latest results.
-last
+        last
         Args:
             start_page: Sets the starting page for the scrape if need to resume
                 from a later point        
