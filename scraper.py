@@ -11,7 +11,7 @@ from definitions import *
 class DojNewsScraper():
     """Scrapes the DOJ press release website for links to all releases and 
     saves the content as JSON files
-
+total_page_count
     Scraper visits the main Breifing Room page located at 
     https://www.justice.gov/news and identifies the max number of pages based
     on the Last button at the bottom of the page. Each page is then iterated
