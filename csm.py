@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 def get_possible_apps():
-    app_name = input('What app are you looking for?')
+    app_name = input('What app are you looking for?  ')
     link = 'https://www.commonsensemedia.org/search/category/app/' + app_name
     page_data = BeautifulSoup(requests.get(link).content, 'lxml')
     possible_apps = page_data.find_all('a',{
@@ -31,11 +31,30 @@ def get_sexuality_score(html_str):
 page_data = BeautifulSoup(requests.get('https://www.commonsensemedia.org/app-reviews').content, 'lxml')
 page_data.find_all('a',{'href':re.compile('/app-reviews/')})
 # %%
+import sys
+import time
+
+def spinning_cursor():
+    while True:
+        for cursor in '|/-\\':
+            yield cursor
+
+
 def main():
+    res_dict = {}
     apps_dict = get_possible_apps()
     base_link ='https://www.commonsensemedia.org/'
+    spinner = spinning_cursor()
+    for _ in range(240):
+        sys.stdout.write(next(spinner))
+        sys.stdout.flush()
+        time.sleep(0.1)
+        sys.stdout.write('\b')
     for app_key, app_link in apps_dict.items():
-        print(get_sexuality_score(base_link + app_link))
+        res_dict[app_key] = get_sexuality_score(base_link + app_link)
+        #print(app_key,get_sexuality_score(base_link + app_link))
+    print(res_dict)
+    return res_dict
     
 if __name__ == '__main__':
     main()
