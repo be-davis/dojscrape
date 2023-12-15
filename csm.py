@@ -2,6 +2,9 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+import pandas as pd
+import datetime
+
 def get_possible_apps():
     app_name = input('What app are you looking for?  ')
     link = 'https://www.commonsensemedia.org/search/category/app/' + app_name
@@ -27,9 +30,7 @@ def get_sexuality_score(html_str):
     soup = get_soup(html_str=html_str)
     sexuality_star_rating = str(soup.find('button',{'id': "content-grid-item-sex-score"}))
     return len(re.findall(r'class="icon-circle-solid active"', sexuality_star_rating))
-# %%
-page_data = BeautifulSoup(requests.get('https://www.commonsensemedia.org/app-reviews').content, 'lxml')
-page_data.find_all('a',{'href':re.compile('/app-reviews/')})
+
 # %%
 import sys
 import time
@@ -40,7 +41,8 @@ def spinning_cursor():
             yield cursor
 
 
-def main():
+def get_search_results():
+    now = datetime.datetime.now().strftime("%m-%d-%Y, %H:%M:%S")
     res_dict = {}
     apps_dict = get_possible_apps()
     base_link ='https://www.commonsensemedia.org/'
@@ -52,12 +54,15 @@ def main():
         sys.stdout.write('\b')
     for app_key, app_link in apps_dict.items():
         res_dict[app_key] = get_sexuality_score(base_link + app_link)
-        #print(app_key,get_sexuality_score(base_link + app_link))
-    print(res_dict)
+        print(app_key,get_sexuality_score(base_link + app_link))
+    df = pd.DataFrame(pd.Series(res_dict, index=res_dict.keys())).reset_index().rename(columns={'index':'csm_app_name', 0:'sexuality_score'})
+    print(df)
+    df.to_csv('{}.csv'.format(now))
     return res_dict
-    
+
 if __name__ == '__main__':
-    main()
+    get_search_results()
+
 
 # %%
 """
