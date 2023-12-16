@@ -4,10 +4,12 @@ import requests
 import re
 import pandas as pd
 import datetime
-
+import os
+APP_NAME = input('What app are you looking for?  ')
+NOW = datetime.datetime.now().strftime("%m-%d-%Y-%H:%M:%S")
 def get_possible_apps():
-    app_name = input('What app are you looking for?  ')
-    link = 'https://www.commonsensemedia.org/search/category/app/' + app_name
+    
+    link = 'https://www.commonsensemedia.org/search/category/app/' + APP_NAME
     page_data = BeautifulSoup(requests.get(link).content, 'lxml')
     possible_apps = page_data.find_all('a',{
                                     'href':re.compile('/app-reviews/'),
@@ -42,7 +44,7 @@ def spinning_cursor():
 
 
 def get_search_results():
-    now = datetime.datetime.now().strftime("%m-%d-%Y, %H:%M:%S")
+    
     res_dict = {}
     apps_dict = get_possible_apps()
     base_link ='https://www.commonsensemedia.org/'
@@ -57,17 +59,49 @@ def get_search_results():
         print(app_key,get_sexuality_score(base_link + app_link))
     df = pd.DataFrame(pd.Series(res_dict, index=res_dict.keys())).reset_index().rename(columns={'index':'csm_app_name', 0:'sexuality_score'})
     print(df)
-    df.to_csv('{}.csv'.format(now))
+    df.to_csv('dataframes/{}.csv'.format(APP_NAME))
     return res_dict
+#%%
+def get_all_app_lists():
+    # replace with your folder's path
+    folder_path = r'dataframes'
 
+    all_files = os.listdir(folder_path)
+
+    # Filter out non-CSV files
+    csv_files = [f for f in all_files if f.endswith('.csv')]
+
+    # Create a list to hold the dataframes
+    df_list = []
+
+    for csv in csv_files:
+        file_path = os.path.join(folder_path, csv)
+        try:
+            # Try reading the file using default UTF-8 encoding
+            df = pd.read_csv(file_path)
+            df_list.append(df)
+        except UnicodeDecodeError:
+            try:
+                # If UTF-8 fails, try reading the file using UTF-16 encoding with tab separator
+                df = pd.read_csv(file_path, sep='\t', encoding='utf-16')
+                df_list.append(df)
+            except Exception as e:
+                print(f"Could not read file {csv} because of error: {e}")
+        except Exception as e:
+            print(f"Could not read file {csv} because of error: {e}")
+
+    # Concatenate all data into one DataFrame
+    big_df = pd.concat(df_list, ignore_index=True)
+    big_df.to_csv('csm_master_df_' +NOW+'.csv')
+    return big_df
+#%%
 if __name__ == '__main__':
     get_search_results()
-
-
+    get_all_app_lists()
 # %%
 """
 app rating: done
 sexuality rating: done
 get meta content where name="description": TODO
-
 """
+
