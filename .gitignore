@@ -3,7 +3,7 @@
 !*.ipynb
 !*.md
 !.gitignore
-!yearly_trends.png
-!bar.png
-!bar1.png
-!app_danger.csv
+!doj/yearly_trends.png
+!doj/bar.png
+!doj/bar1.png
+!app_danger/app_danger_updated.csv
