@@ -1,13 +1,13 @@
 #%%
 import pandas as pd
 import numpy as np
-app_danger = pd.read_csv('app_danger_updated.csv')
-
+app_danger = pd.read_csv('data/app_danger_updated.csv')
+#%%
 def get_app_rankings(source, app_name):
     source_df = app_danger.loc[app_danger['Source'] == source].reset_index()
     source_df['percentile'] = source_df['Num_Negative_Reviews'].rank(pct=True)
 
-    final_df = source_df.loc[source_df['Title']==app_name]
+    final_df = source_df.loc[source_df['Title']]
     if final_df.shape[0] > 1:
         raise Exception("There are multiple apps with that name")
     app_stats = {
@@ -15,9 +15,12 @@ def get_app_rankings(source, app_name):
         'percentile': np.round(final_df.iloc[0,4]*100, decimals=2),
         'num_negative_reviews': final_df.iloc[0,3]
     }
-    print(app_stats)  
+    print(app_stats)
     return app_stats
 # %%
+if __name__ == '__main__':
+    get_app_rankings('apple', 'Snapchat')
+
 """
 From app danger df
 -get percentile score off app in question --DONE
